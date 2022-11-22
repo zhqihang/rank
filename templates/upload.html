@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- 上述3个meta标签*必须*放在最前面，任何其他内容都*必须*跟随其后！ -->
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="../../favicon.ico">
+
+    <title>Upload</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <link href="../../assets/css/ie10-viewport-bug-workaround.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="jumbotron.css" rel="stylesheet">
+
+    <!-- Just for debugging purposes. Don't actually copy these 2 lines! -->
+    <!--[if lt IE 9]><script src="../../assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
+    <script src="../../assets/js/ie-emulation-modes-warning.js"></script>
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://cdn.bootcss.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+      <script src="https://cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <link href="//cdn.bootcss.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="external nofollow" target="_blank"  rel="external nofollow" target="_blank"  rel="external nofollow" target="_blank"  rel="stylesheet">
+   <script src="//cdn.bootcss.com/jquery/2.1.1/jquery.min.js" rel="external nofollow"  rel="external nofollow"  rel="external nofollow" ></script>
+   <script src="//cdn.bootcss.com/bootstrap/3.3.6/js/bootstrap.min.js" rel="external nofollow"  rel="external nofollow"  rel="external nofollow" ></script>
+  </head>
+
+<style>
+    .dropbtn {
+    background-color: #808080;
+    color: white;
+    padding: 16px;
+    font-size: 16px;
+    border: none;
+    cursor: pointer;
+}
+
+.dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #f9f9f9;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+}
+
+.dropdown-content a {
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+}
+
+.dropdown-content a:hover {background-color: #f1f1f1}
+
+.dropdown:hover .dropdown-content {
+    display: block;
+}
+
+.dropdown:hover .dropbtn {
+    background-color: #c0c0c0;
+}
+
+</style>
+
+<body>
+    <div class="container">
+          <br>
+        <div class="jumbotron">
+		<form action="./" id="aaa" method="post" enctype="multipart/form-data">
+			{% csrf_token %}
+			{{ form }}
+
+			<p class="form-group" style="margin:auto;">
+            <p style="text-align: center; margin-right: 50px">
+            <h2 style="top:1%; margin-left:450px">文件上传</h2>
+            <br>
+            <p style="margin-left:100px">[ 请上传一份xlsx文件，可以对列表的信息进行增加，来更新并生成对应的竞争力分数 ]</p>
+            <br>
+            <div><input id="file" name="upfile" type="file" class="form-control-file" style="margin-left:45%; height:30px; width:200px;" accept=".xlsx"></div>
+            <br>
+            <div class="dropdown">
+              <select class="dropbtn" style="margin-left:420px" name="type" id="select">
+                  <option value="">请选择工业软件类型</option>
+                <option value="工业软件嵌入式">工业软件嵌入式</option>
+                <option value="工业软件生产控制">工业软件生产控制</option>
+                <option value="工业软件信息管理">工业软件信息管理</option>
+                  <option value="工业软件研发">工业软件研发</option></select></div>
+            <br>
+            <p style="color: red; text-align: center; margin-right: 150px">{{alarm}}</p>
+            <input type="submit" value="提交"  class="btn btn-lg btn-success" style="margin-left:90%"></p>
+                <br>
+                <a href="./back/" style="margin-top: 10px"><input type="button" value="返回"  class="btn btn-lg btn-success" style="margin-left:90%"></a>
+		</form>
+	</div>
+
+      </div>
+</body>
+</html>
+
+<script type="text/javascript">
+        var text_value1 = document.getElementById('aaa');
+        text_value1.addEventListener("submit",function(e){
+            var text_value = document.getElementById('file').value;
+            var text_value3 = document.getElementById('select').value;
+            if (text_value == "" || text_value3 == "") {
+                alert("文件或选项不能为空");
+                e.preventDefault();
+            }
+        },false);
+</script>

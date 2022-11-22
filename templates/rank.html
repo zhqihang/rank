@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- 上述3个meta标签*必须*放在最前面，任何其他内容都*必须*跟随其后！ -->
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="../../favicon.ico">
+
+    <title>Rank</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <link href="../../assets/css/ie10-viewport-bug-workaround.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="jumbotron.css" rel="stylesheet">
+
+    <!-- Just for debugging purposes. Don't actually copy these 2 lines! -->
+    <!--[if lt IE 9]><script src="../../assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
+    <script src="../../assets/js/ie-emulation-modes-warning.js"></script>
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://cdn.bootcss.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+      <script src="https://cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+     <link href="//cdn.bootcss.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="external nofollow" target="_blank"  rel="external nofollow" target="_blank"  rel="external nofollow" target="_blank"  rel="stylesheet">
+   <script src="//cdn.bootcss.com/jquery/2.1.1/jquery.min.js" rel="external nofollow"  rel="external nofollow"  rel="external nofollow" ></script>
+   <script src="//cdn.bootcss.com/bootstrap/3.3.6/js/bootstrap.min.js" rel="external nofollow"  rel="external nofollow"  rel="external nofollow" ></script>
+</head>
+
+<style>
+    ul{
+        list-style: none;
+        margin:0px;
+        padding:0px;
+        width:auto;
+    }
+    ul li{
+        float:left;
+        margin-top:10px;
+        padding:10px;
+        border-style: solid;
+        border:1px solid;
+    }
+</style>
+
+<body>
+
+<script>
+function export_data(){
+         var csrf=$('input[name="csrfmiddlewaretoken"]').val();
+         const req = new XMLHttpRequest();
+         //请求连接
+         req.open('POST', '/export_data/', true);
+         req.responseType = 'blob';
+         req.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded'); //设置请求头
+         //请求参数
+    	 req.send(
+             '&&csrfmiddlewaretoken='+csrf); //输入参数
+         //返回结果
+         req.onload = function() {
+           // debugger;
+           const data = req.response;
+           // print(data)
+           const blob = new Blob([data]);
+           const blobUrl = window.URL.createObjectURL(blob);
+           //模拟下载
+           download(blobUrl);
+         };
+    }
+
+
+
+function download(blobUrl) {
+     // debugger;
+
+    // alert("开始下载");
+
+     //创建a标签，用于保存excel
+     const a = document.createElement('a');
+     a.style.display = 'none';
+
+	 //下载文件的名称拼接
+     var file_name_temp = "数据";
+    
+	 //下载的文件名全称，包括后缀名。
+     a.download = file_name_temp + '.xls';
+     a.href = blobUrl;
+     a.click();
+     document.body.removeChild(a);
+    }
+
+</script>
+
+<div style="padding:5px;background:#fafafa;width:70px;border:1px solid #ccc;margin-left: 10px; margin-top: 10px; float:left">
+    <a href="./back/" class="easyui-linkbutton" data-options="iconCls:'icon-back'">返回首页</a></div>
+    <div><form action="./" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+              <select style="margin-left:10px" name="option_type" id="select">
+                <option value="{{option_type}}" style="display:none">{{option_type}}</option>
+                  <option value="工业软件研发">工业软件研发</option>
+                  <option value="工业软件嵌入式">工业软件嵌入式</option>
+                <option value="工业软件生产控制">工业软件生产控制</option>
+                <option value="工业软件信息管理">工业软件信息管理</option>
+                  </select>
+                <input id="" name="uptext" onkeyup="this.value=this.value.replace(/[,     ]/g,'')" type="text" style="margin-left:10px; margin-top:10px; width: 150px; height: 35px; margin-right:5px" placeholder="可输入关键信息", value="{{guanjian}}">
+				<input type="submit" value="查询"  class="btn btn-lg btn-success">
+                <button id="export_data1" type="button" class="btn btn-primary col-sm-5" style="margin-left: 10px; margin-top: 10px; width: 200px" onclick="export_data()">全部导出</button>
+    </form></div>
+    <div style="margin-left:10px;">
+    <table id="dg" class="easyui-datagrid" title="Titlename" style="width:1000px;height:560px; margin-top: 10px"
+            data-options="singleSelect:true,collapsible:true">
+        <thead>
+            <tr>
+                <th field="id" width="50px">序号</th>
+                <th field="name" width="100px">企业名称</th>
+                <th field="address_ip" width="200px">主要产品类型</th>
+                <th field="create_time" width="400px">竞争力分数</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for data in data_list %}
+            <tr>
+                <td width="5px">{{ number|add:forloop.counter }}</td>
+                <td width="300px"><a href="./detail/?rank_id={{data.rank_id}}&guanjian={{guanjian}}&page={{page}}&option_type={{option_type}}">{{ data.name }}</a></td>
+                <td width="100px">{{ data.type }}</td>
+                <td width="200px">{{ data.score }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+
+    </table>
+    </div>
+    <div style="margin-left:10px;">
+        <ul class="pagination">
+            {% if page_object.has_previous %}
+                <li>
+                <a href="?page={{ page_object.previous_page_number }}&guanjian={{guanjian}}&option_type={{option_type}}" aria-label="Previous"><span aria-hidden="true">&laquo;</span></a>
+                </li>
+            {% endif %}
+
+           {% for pg in page_object.paginator.page_range %}
+            {% if page_object.number == pg %}
+            <li class="active"><a href="?page={{ pg }}&guanjian={{guanjian}}&option_type={{option_type}}">{{ pg }}</a></li>
+            {% else %}
+            <li><a href="?page={{ pg }}&guanjian={{guanjian}}&option_type={{option_type}}">{{ pg }}</a></li>
+            {% endif %}
+            {% endfor %}
+            {% if page_object.has_next %}
+                <li>
+                    <a href="?page={{ page_object.next_page_number }}&guanjian={{guanjian}}&option_type={{option_type}}" aria-label="Next"><span aria-hidden="true">&raquo;</span></a></li>
+            {% endif %}
+        </ul>
+    </div>
+</body>
+</html>
