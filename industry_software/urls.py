@@ -17,6 +17,7 @@
 from django.contrib import admin
 from django.urls import path
 from industry_software import function
+from myapp import views
 
 # from myapp import views
 
@@ -80,4 +81,9 @@ urlpatterns = [
     path('meizhou/vi', function.gohome),
     path('chaozhou/', function.chaozhou),
     path('chaozhou/vi', function.gohome),
+
+    # 这里是首页竞争力可视化
+    path('visualize/', views.visualize),
+    path('visualize/vi',function.gohome),
+    path('visualize/keshihua', views.keshihua),
 ]

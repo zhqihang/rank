@@ -46,6 +46,10 @@
 <br>
 <b>工业软件仿真产品（{{ company.fz_product }}）</b>
 <br>
+{% else %}
+<br>
+<b>工业软件仿真产品（0）</b>
+<br>
 {% endif %}
     {% for obj in pro_detail %}
         {% if obj.pro_type == 1 %}
@@ -56,28 +60,35 @@
     {% endfor %}
 
 {% if company.qr_product != 0%}
+<br>
 <b>工业软件嵌入式产品（{{ company.qr_product }}）</b>
 <br>
+{% else %}
+<br>
+<b>工业软件嵌入式产品（0）</b>
 <br>
 {% endif %}
     {% for obj in pro_detail %}
          {% if obj.pro_type == 2 %}
             • {{obj.pro_detail}}
-<!--            （{{forloop.counter}}）{{obj.pro_detail}}-->
 <br>
         {% endif %}
     {% endfor %}
 
 
 {% if company.kz_product != 0%}
+<br>
 <b>工业软件生产控制产品（{{ company.kz_product }}）</b>
 <br>
+
+{% else %}
+<br>
+<b>工业软件生产控制产品（0）</b>
 <br>
 {% endif %}
     {% for obj in pro_detail %}
          {% if obj.pro_type == 3 %}
             • {{obj.pro_detail}}
-<!--            （{{forloop.counter}}）{{obj.pro_detail}}-->
 <br>
         {% endif %}
     {% endfor %}
@@ -86,11 +97,14 @@
 <b>工业软件经营信息管理产品（{{ company.jy_product }}）</b>
 <br>
 <br>
+{% else %}
+<br>
+<b>工业软件经营信息管理产品（0）</b>
+<br>
 {% endif %}
     {% for obj in pro_detail %}
          {% if obj.pro_type == 4 %}
             • {{obj.pro_detail}}
-<!--            （{{forloop.counter}}）{{obj.pro_detail}}-->
 <br>
         {% endif %}
     {% endfor %}
@@ -99,17 +113,17 @@
 <br>
 <b>工业软件平台与系统产品（{{ company.pt_product }}）</b>
 <br>
+{% else %}
+<br>
+<b>工业软件平台与系统产品（0）</b>
+<br>
 {% endif %}
-
     {% for obj in pro_detail %}
          {% if obj.pro_type == 5 %}
             • {{obj.pro_detail}}
-<!--            （{{forloop.counter}}）{{obj.pro_detail}}-->
 <br>
-
         {% endif %}
     {% endfor %}
-
 {% else %}
 <b>该公司没有产品</b>
 {% endif %}
