@@ -103,7 +103,7 @@ def rank(request):
     if request.method == 'POST':
         text = request.POST.get('uptext')
         option_type = request.POST.get('option_type')
-        contact_list = models.Rank.objects.filter(Q(type=option_type)&(Q(name__contains=text)|Q(range__contains=text))).order_by('-score')  # 这边的Rank指代数据表
+        contact_list = models.Rank.objects.filter(Q(type=option_type)&(Q(name__contains=text))).order_by('-score')  # 这边的Rank指代数据表
         paginator = Paginator(contact_list, 15)  # 15是每页显示的数量，把数据库取出的数据生成paginator对象，并指定每页显示的数量
         page = request.GET.get('page')  # 从查询字符串获取page的当前页数
         print('----------------------------上传时关键字查询过程' + str(page))
@@ -122,7 +122,7 @@ def rank(request):
         guanjian = request.GET.get('guanjian')
         option_type = request.GET.get('option_type')
         if not option_type:
-            option_type = '工业软件研发'
+            option_type = '工业仿真设计'
         # 无关键字查询的信息
         if not guanjian:
             # 从Django自带的paginator模块插入类
@@ -143,7 +143,7 @@ def rank(request):
             return render(request, 'rank.html', {'page_object': page_object, 'data_list': data_list, 'number': (page_object.number - 1) * 15, 'page': page, 'option_type': option_type})
         # 查完详情后返回不重刷新
         else:
-            contact_list = models.Rank.objects.filter(Q(type=option_type)&(Q(type__contains=guanjian) | Q(range__contains=guanjian))).order_by('-score')  # 这边的model指代数据表
+            contact_list = models.Rank.objects.filter(Q(type=option_type)&(Q(type__contains=guanjian))).order_by('-score')  # 这边的model指代数据表
             paginator = Paginator(contact_list, 15)  # 15是每页显示的数量，把数据库取出的数据生成paginator对象，并指定每页显示的数量
             page = request.GET.get('page')  # 从查询字符串获取page的当前页数
             print('----------------------------关键字查询过程' + str(page))

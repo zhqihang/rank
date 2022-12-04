@@ -104,10 +104,10 @@ function download(blobUrl) {
             {% csrf_token %}
               <select style="margin-left:10px" name="option_type" id="select">
                 <option value="{{option_type}}" style="display:none">{{option_type}}</option>
-                  <option value="工业软件研发">工业软件研发</option>
-                  <option value="工业软件嵌入式">工业软件嵌入式</option>
-                <option value="工业软件生产控制">工业软件生产控制</option>
-                <option value="工业软件信息管理">工业软件信息管理</option>
+                  <option value="工业仿真设计">工业仿真设计</option>
+                  <option value="工业嵌入式">工业嵌入式</option>
+                <option value="工业生产控制">工业生产控制</option>
+                <option value="工业经营管理">工业经营管理</option>
                   </select>
                 <input id="" name="uptext" onkeyup="this.value=this.value.replace(/[,     ]/g,'')" type="text" style="margin-left:10px; margin-top:10px; width: 150px; height: 35px; margin-right:5px" placeholder="可输入关键信息", value="{{guanjian}}">
 				<input type="submit" value="查询"  class="btn btn-lg btn-success">
