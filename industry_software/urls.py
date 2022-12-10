@@ -86,4 +86,5 @@ urlpatterns = [
     path('visualize/', views.visualize),
     path('visualize/vi',function.gohome),
     path('visualize/keshihua', views.keshihua),
+    path('visualize/chart/',views.chart_zhexian),
 ]

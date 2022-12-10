@@ -1,134 +1,259 @@
+{% load static %}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:font-size="http://www.w3.org/1999/xhtml">
 <head>
-    <meta charset="UTF-8">
+    <meta charset="utf-8">
     <title>Detail</title>
+    <script src="{% static './js/echarts.js' %}"></script>
+    <style type="text/css">
+    header#page_header nav { /*header#page_header nav的属性*/
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+    header#page_header nav ul li { /*header#page_header nav ul li属性*/
+    padding: 0;
+    margin: 0 20px 0 0;
+    display: inline-block;
+}
+</style>
 </head>
 <body>
-公司名: {{data.name}}
-<br>
-<br>
-经营规模(资产总额): {{company.assets}}
-<br>
-<br>
-盈利能力(营业收入): {{company.income}}
-<br>
-<br>
-盈利能力(净资产收益率): {{company.yield_rate}}
-<br>
-<br>
-科技创新总含量: {{company.total_content}}
-<br>
-<br>
-注册资本: {{company.capital}}
-<br>
-<br>
-经营范围: {{company.range}}
-<br>
-<br>
-简介: {{company.Introduction}}
-<br>
-<br>
-主要产品类型: {{data.type}}
-<br>
-<br>
-竞争力分数: {{data.score}}
-<br>
-<br>
-产品总数: {{company.product_num}}
-<br>
-<br>
+
+<h1 style="font-family:arial;color:red;text-align:center;">{{data.name}}</h1>
+<header id="page_header">
+    <nav>
+        <ul>
+            <li><a href="#工商信息">工商信息</a></li>
+            <li><a href="#雷达图">雷达图</a></li>
+            <li><a href="#产品信息">产品信息</a></li>
+            <li><a href="#柱状图">柱状图</a></li>
+            <li><a href="./back/?guanjian={{guanjian}}&page={{page}}&option_type={{option_type}}" class="easyui-linkbutton" data-options="iconCls:'icon-back'">返回</a></li>
+        </ul>
+    </nav>
+</header>
+
+<section id="工商信息">
+ <h3 class="title">
+     <span class="title-container">
+         <span>工商信息</span><!---->
+     </span>
+     <span class="tbadge"></span>
+ </h3>
+<table border="1"cellspacing="0"cellpadding="0">
+    <tr>
+        <th>经营规模(资产总额)</th>
+        <td> {{company.assets}}</td>
+        <th>盈利能力(营业收入)</th>
+        <td> {{company.income}}</td>
+        <th>盈利能力(净资产收益率)</th>
+        <td>{{company.yield_rate}}</td>
+        <th>科技创新总含量</th>
+        <td>{{company.total_content}}</td>
+        <th>注册资本</th>
+        <td> {{company.capital}}</td>
+    </tr>
+</table>
+<table border="1"cellspacing="0"cellpadding="0">
+    <tr>
+        <th>经营范围</th>
+        <td> {{company.range}}</td>
+    </tr>
+    <tr>
+        <th>简介</th>
+        <td> {{company.Introduction}}</td>
+    </tr>
+</table>
+</section>
+
+<section id="雷达图">
+ <h3 class="title">
+     <span class="title-container">
+         <span>雷达图</span><!---->
+     </span>
+     <span class="tbadge"></span>
+ </h3>
+    <p style="color:red;text-align:left;font-size:80px">竞争力分数</p>
+    <p style="color:red;text-align:left;font-size:80px"> {{data.score}}</p>
+    <div id="leidatu" style="width:1000px;height:600px;margin:-500px 0px 0px 600px"></div>
+    <script>
+        var myChart = echarts.init(document.getElementById('leidatu'));
+        var option = {
+
+            legend: {
+                data: ['企业竞争力分析雷达图',]
+                    },
+            radar: {
+            // shape: 'circle',
+            indicator: [
+              { name: '得分', max: 10 },
+              { name: '资产总额', max: 1000000000000 },
+              { name: '营业收入', max: 1000000000000 },
+              { name: '净资产收益率', max: 1 },
+              { name: '注册资本', max: 100000000000 },
+              { name: '总产品数', max: 50 }
+            ]
+          },
+          series: [
+            {
+              name: '企业竞争力分析雷达图',
+              type: 'radar',
+              data: [
+                {
+                  value: [{{rank.score}}, {{company.assets}}, {{company.income}}, {{company.yield_rate}}, {{company.capital}}, {{company.product_num}}],
+                  name: '企业竞争力分析雷达图'
+                }
+              ]
+            }
+          ]
+        };
+      // 使用刚指定的配置项和数据显示图表。
+      myChart.setOption(option);
+    </script>
+</section>
+
+<section id="产品信息">
 <!--判断返回的QuerySet是否为空，不为空循环打印产品内容，为空则打印“该公司没有产品”-->
-{% if pro_detail %}
-公司产品：
-<br>
-{% if company.fz_product != 0%}
-<br>
-<b>工业软件仿真产品（{{ company.fz_product }}）</b>
-<br>
-{% else %}
-<br>
-<b>工业软件仿真产品（0）</b>
-<br>
-{% endif %}
+     <h3 class="title">
+     <span class="title-container">
+         <span>产品信息</span><!---->
+     </span>
+     <span class="tbadge"></span>
+    </h3>
+
+    <table>
+    <tr>
+        <th>产品总数:</th>
+        <td> {{company.product_num}}</td>
+        <td></td>
+        <th>主要产品类型:</th>
+        <td>{{data.type}}</td>
+    </tr>
+</table>
+    <br>
+<table border="1">
+    <tr>
+    {% if pro_detail %}
+    {% if company.fz_product != 0 %}
+        <th style="font-size:34px"colspan="1";>工业软件仿真产品（{{ company.fz_product }}）</th>
+    {% else %}
+        <h3 style="text-align:center;">工业软件仿真产品（0）</h3>
+    {% endif %}
+    </tr>
     {% for obj in pro_detail %}
-        {% if obj.pro_type == 1 %}
-            • {{obj.pro_detail}}
-<!--            （{{forloop.counter}}）{{obj.pro_detail}}-->
-<br>
+       <tr>{% if obj.pro_type == 1 %}
+            <td>• {{obj.pro_detail}}</td>
         {% endif %}
+       </tr>
     {% endfor %}
+</table>
 
-{% if company.qr_product != 0%}
-<br>
-<b>工业软件嵌入式产品（{{ company.qr_product }}）</b>
-<br>
-{% else %}
-<br>
-<b>工业软件嵌入式产品（0）</b>
-<br>
-{% endif %}
+<table border="1">
+    <tr>
+    {% if company.qr_product != 0%}
+        <th style="font-size:34px"colspan="1";>工业软件嵌入式产品（{{ company.qr_product }}）</th>
+    {% else %}
+         <h3 style="text-align:center;">工业软件嵌入式产品（0）</h3>
+    {% endif %}
+    </tr>
+
     {% for obj in pro_detail %}
-         {% if obj.pro_type == 2 %}
-            • {{obj.pro_detail}}
-<br>
+    <tr>{% if obj.pro_type == 2 %}
+        <td>• {{obj.pro_detail}}</td>
         {% endif %}
+    </tr>
     {% endfor %}
+</table>
 
-
-{% if company.kz_product != 0%}
-<br>
-<b>工业软件生产控制产品（{{ company.kz_product }}）</b>
-<br>
-
-{% else %}
-<br>
-<b>工业软件生产控制产品（0）</b>
-<br>
-{% endif %}
+<table border="1">
+    <tr>
+    {% if company.kz_product != 0%}
+        <th style="font-size:34px"colspan="1";>工业软件生产控制产品（{{ company.kz_product }}）</th>
+    {% else %}
+        <h3 style="text-align:center;">工业软件生产控制产品（0）</h3>
+    {% endif %}
+    </tr>
     {% for obj in pro_detail %}
-         {% if obj.pro_type == 3 %}
-            • {{obj.pro_detail}}
-<br>
+    <tr>{% if obj.pro_type == 3 %}
+        <td>• {{obj.pro_detail}}</td>
         {% endif %}
+    </tr>
     {% endfor %}
+</table>
 
-{% if company.jy_product != 0%}
-<b>工业软件经营信息管理产品（{{ company.jy_product }}）</b>
-<br>
-<br>
-{% else %}
-<br>
-<b>工业软件经营信息管理产品（0）</b>
-<br>
-{% endif %}
+<table border="1">
+    <tr>
+    {% if company.jy_product != 0%}
+        <th style="font-size:34px"colspan="1";>工业软件经营信息管理产品（{{ company.jy_product }}）</th>
+    {% else %}
+        <h3 style="text-align:center;">工业软件经营信息管理产品（0）</h3>
+    {% endif %}
+    </tr>
     {% for obj in pro_detail %}
-         {% if obj.pro_type == 4 %}
-            • {{obj.pro_detail}}
-<br>
+        <tr>{% if obj.pro_type == 4 %}
+           <td>• {{obj.pro_detail}}</td>
         {% endif %}
+        </tr>
     {% endfor %}
+</table>
+<table border="1">
+    <tr>
+    {% if company.pt_product != 0%}
+        <th style="font-size:34px"colspan="1";>工业软件平台与系统产品（{{ company.pt_product }}）</th>
+    {% else %}
+        <h3 style="text-align:center;">工业软件平台与系统产品（0）</h3>
+    {% endif %}
+    </tr>
 
-{% if company.pt_product != 0%}
-<br>
-<b>工业软件平台与系统产品（{{ company.pt_product }}）</b>
-<br>
-{% else %}
-<br>
-<b>工业软件平台与系统产品（0）</b>
-<br>
-{% endif %}
     {% for obj in pro_detail %}
-         {% if obj.pro_type == 5 %}
-            • {{obj.pro_detail}}
-<br>
+    <tr>{% if obj.pro_type == 5 %}
+            <td>• {{obj.pro_detail}}</td>
         {% endif %}
+        </tr>
     {% endfor %}
-{% else %}
-<b>该公司没有产品</b>
-{% endif %}
-<br>
-<br>
+    {% else %}
+    <h3 style="text-align:center;">该公司没有产品</h3>
+    {% endif %}
+</table>
+</section>
+
+<section id="柱状图">
+<!--这里是柱状图-->
+<!-- 为 ECharts 准备一个定义了宽高的 DOM -->
+     <h3 class="title">
+     <span class="title-container">
+         <span>柱状图</span><!---->
+     </span>
+     <span class="tbadge"></span>
+ </h3>
+    <div id="zhuzhuangtu" style="width:1000px;height:600px;float: left"></div>
+    <script type="text/javascript">
+      // 基于准备好的dom，初始化echarts实例
+      var myChart = echarts.init(document.getElementById('zhuzhuangtu'));
+      // 指定图表的配置项和数据
+      var option = {
+        tooltip: {},
+        legend: {
+          data: ['产品数']
+        },
+        xAxis: {
+          data: ['仿真设计', '嵌入式系统', '生产调度和过程控制', '经营信息管理', '平台与系统']
+        },
+        yAxis: {},
+        series: [
+          {
+            name: '产品数',
+            type: 'bar',
+            data: [{{company.fz_product}}, {{company.qr_product}}, {{company.kz_product}}, {{company.jy_product}}, {{company.pt_product}}]
+          }
+        ]
+      };
+      // 使用刚指定的配置项和数据显示图表。
+      myChart.setOption(option);
+    </script>
+</section>
+
+
 <h3>
     产品词云
 </h3>

@@ -8,7 +8,6 @@
     <meta name="description" content="">
     <meta name="author" content="">
     <link rel="icon" href="../../favicon.ico">
-    <script src="{% static './js/echarts.js' %}"></script>
 
     <title>Industry Software</title>
 
@@ -37,6 +36,7 @@
     <link href="//cdn.bootcss.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="external nofollow" target="_blank"  rel="external nofollow" target="_blank"  rel="external nofollow" target="_blank"  rel="stylesheet">
    <script src="//cdn.bootcss.com/jquery/2.1.1/jquery.min.js" rel="external nofollow"  rel="external nofollow"  rel="external nofollow" ></script>
    <script src="//cdn.bootcss.com/bootstrap/3.3.6/js/bootstrap.min.js" rel="external nofollow"  rel="external nofollow"  rel="external nofollow" ></script>
+    <script src="{% static './js/echarts.js' %}"></script>
 </head>
 
   <body>
@@ -55,7 +55,7 @@
       </div>
     </nav>
 
-<!--    这里为选择公司按钮-->
+
     <div class="container" style="position:absolute; left:30px; top:50px;">
         <div class="dropdown">
             <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true" style="float: left; margin-right: 10px; margin-top: 10px; height:50px">
@@ -72,74 +72,69 @@
         </div>
     </div>
 
-<!--    这里开发折线图-->
-  <div id="zhexiantu" style="width:100%;height:600px;float: left; margin-top: 200px" ></div>
-    <script type="text/javascript">
-        var myChart = echarts.init(document.getElementById('zhexiantu'));
+<!--这里读数据，可能要用到jQuery，学一下-->
+    <div id="折线图" style="width:1200px;height:500px;margin-top:100px;"></div>
+     <script type="text/javascript">
+        $(function(){
+            initChart();
+        })
+        function initChart(){
+        var myChart = echarts.init(document.getElementById('折线图'));
         var option = {
-              title: {
-                text: '公司竞争力'
-              },
-              tooltip: {
-                trigger: 'axis'
-              },
-              legend: {
-                data: ['Email', 'Union Ads', 'Video Ads', 'Direct', 'Search Engine']
-              },
-              grid: {
-                left: '3%',
-                right: '4%',
-                bottom: '3%',
-                containLabel: true
-              },
-              toolbox: {
-                feature: {
-                  saveAsImage: {}
-                }
-              },
-              xAxis: {
-                type: 'category',
-                boundaryGap: false,
-                data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
-              },
-              yAxis: {
-                type: 'value'
-              },
-              series: [
-                {
-                  name: 'Email',
-                  type: 'line',
-                  stack: 'Total',
-                  data: [120, 132, 101, 134, 90, 230, 210]
+          title: {
+            text: '得分折线图',
+            textAlign:'auto',
+            left:'27%'
+          },
+          tooltip: {
+            trigger: 'axis'
+          },
+          grid:{
+            bottom:'50%',
+            left:'20%',
+          },
+          legend: {
+            data: ['产品研发类', '嵌入式类', '生产控制类', '信息管理类', '平台与系统类'],
+            right:'10%'
+          },
+          toolbox: {
+            feature: {
+              saveAsImage: {}
+            }
+          },
+          xAxis: {
+            type: 'category',
+            boundaryGap: false,
+            data: [],
+            axisLabel: {
+                interval: 0,
+                formatter: function(value) {
+                    var str = value.split("");
+                    return str.join("\n");
                 },
-                {
-                  name: 'Union Ads',
-                  type: 'line',
-                  stack: 'Total',
-                  data: [220, 182, 191, 234, 290, 330, 310]
-                },
-                {
-                  name: 'Video Ads',
-                  type: 'line',
-                  stack: 'Total',
-                  data: [150, 232, 201, 154, 190, 330, 410]
-                },
-                {
-                  name: 'Direct',
-                  type: 'line',
-                  stack: 'Total',
-                  data: [320, 332, 301, 334, 390, 330, 320]
-                },
-                {
-                  name: 'Search Engine',
-                  type: 'line',
-                  stack: 'Total',
-                  data: [820, 932, 901, 934, 1290, 1330, 1320]
-                }
-              ]
-            };
-        myChart.setOption(option);
+        },
+          },
+          yAxis: {
+            type: 'value'
+          },
+          series: []
+        };
 
+        $.ajax({
+            url:"/visualize/chart/",
+            type:"get",
+            dataType:"JSON",
+            success:function(res){
+             if(res.status){
+                option.xAxis.data = res.data.x_axis;
+                option.series = res.data.y_axis;
+
+                myChart.setOption(option);
+             }
+
+            }
+        })
+        }
 
     </script>
 </body>
