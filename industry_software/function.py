@@ -8,6 +8,13 @@ import pandas as pd
 import json
 from industry_software.tools.software_tool_new import run
 from industry_software.tools.statistic import *
+from django.http import JsonResponse
+from industry_software import word_cloud
+import wordcloud
+import jieba
+import numpy as np
+from django.forms.models import model_to_dict
+
 
 MEDIA_ROOT = "/root/industry_software/industry_software/dataset/"
 json_file_path = '/root/industry_software/industry_software/dataset/upload.json'
@@ -167,7 +174,37 @@ def getDetail(request):
     data = models.Rank.objects.get(rank_id=rank_id)
     company = models.Company.objects.get(name=data.name)
     pro_detail = models.Products.objects.filter(pro_company=data.name)
-    return render(request, 'detail.html', {"company":company,'pro_detail':pro_detail, 'data': data,'rank_id': rank_id, 'guanjian': guanjian, 'page': page, 'option_type': option_type})
+
+    #生成词云
+    #将对象转化为字典
+    list = []
+    for obj in pro_detail:
+        detail_dict = model_to_dict(obj)
+        for type,value in detail_dict.items():
+            tmpes = value
+            list.append(tmpes)
+    #字典转化为.txt文件
+
+    with open('test.txt','w',encoding='utf-8') as file:
+        file.write(str(list))
+
+    myFile = open('test.txt', 'r', encoding='utf-8')
+    context = {}
+    if not myFile :
+        context['message'] = "No File"
+        return render(request, "detail.html", context)
+    d = os.path.dirname(__file__)
+    f = open(os.path.join(d, 'wordcloud_text.txt'), 'w', encoding='utf-8')
+    for line in myFile.readlines():
+        f.write(line)
+    f.close()
+    #生成词云图
+    try:
+        img = word_cloud.plotTitleCloud()
+    except:
+        img = 'static/img.png'
+
+    return render(request, 'detail.html', {"company":company,'pro_detail':pro_detail, 'data': data,'rank_id': rank_id, 'guanjian': guanjian, 'page': page, 'option_type': option_type, 'img':img})
 
 
 from io import BytesIO

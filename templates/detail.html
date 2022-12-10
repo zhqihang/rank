@@ -129,6 +129,38 @@
 {% endif %}
 <br>
 <br>
+<h3>
+    产品词云
+</h3>
+{% if pro_detail  %}
+
+<body>
+    <div id = 'main-wrapper'>
+		<section>
+			<div class = "center">
+
+				<div id = 'word-cloud'>
+
+                    <img src = "\static\wordcloud\show1.png" id = "img-box" width="1000" height="500">
+				</div>
+				<div id = 'chart-1' class = 'chart' ></div>
+				<div id = 'chart-2' class = 'chart' ></div>
+				<div id = 'chart-3' class = 'chart' ></div>
+			</div>
+		</section>
+
+		<footer>
+			<div class = "foot">
+			</div>
+		</footer>
+	</div>
+</body>
+
+{% else %}
+
+<b>无产品</b>
+{%  endif %}
+<br>
 <div>
     <a href="./back/?guanjian={{guanjian}}&page={{page}}&option_type={{option_type}}" class="easyui-linkbutton" data-options="iconCls:'icon-back'">返回</a>
 </div>
