@@ -87,4 +87,8 @@ urlpatterns = [
     path('visualize/vi',function.gohome),
     path('visualize/keshihua', views.keshihua),
     path('visualize/chart/',views.chart_zhexian),
+
+    #百度地图
+    path('baiduMap/', views.baiduMap),
+    path('baiduMapv/', views.baiduMapv),
 ]

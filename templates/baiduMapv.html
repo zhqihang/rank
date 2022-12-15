@@ -1,0 +1,245 @@
+
+<html>
+<head>
+  <title>百度地图</title>
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <title></title>
+  <script src="http://code.jquery.com/jquery-1.8.2.min.js"></script>
+  <script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=bW32G0vf4gCVbbHi9QbZRYvh4yIVIpsx"></script>
+  <script type="text/javascript" src="http://api.map.baidu.com/library/AreaRestriction/1.2/src/AreaRestriction_min.js"></script>
+
+  <style type="text/css">
+    html, body {
+      margin: 0px;
+      padding: 0px;
+      height: 100%;
+    }
+    #container {
+      width: 100%;height: 100%;overflow: hidden;margin:0;font-family:"微软雅黑";
+    }
+    ul li {
+      list-style: none;
+    }
+    .btn-wrap {
+      z-index: 999;
+      position: fixed;
+      bottom: 3.5rem;
+      margin-left: 3rem;
+      padding: 1rem 1rem;
+      border-radius: .25rem;
+      background-color: #fff;
+      box-shadow: 0 2px 6px 0 rgba(27, 142, 236, 0.5);
+    }
+    .btn {
+      width: 120px;
+      height: 30px;
+      float: left;
+      background-color: #fff;
+      color: rgba(27, 142, 236, 1);
+      font-size: 14px;
+      border:1px solid rgba(27, 142, 236, 1);
+      border-radius: 5px;
+      margin: 0 5px;
+      text-align: center;
+      line-height: 30px;
+    }
+    .btn:hover {
+      background-color: rgba(27, 142, 236, 0.8);
+      color: #fff;
+    }
+    .circle2{
+      position: absolute;
+      width: 38px;
+      height: 38px;
+      background-color:rgb(0,200,200);
+      filter:alpha(opacity:30);
+      opacity:0.8;
+      border-radius: 50%;
+      -moz-border-radius: 50%;
+      -webkit-border-radius: 50%;
+      z-index: 9999;
+      text-align:center;
+    }
+  </style>
+</head>
+
+<body>
+<div id="container"></div>
+
+<%--<ul class="btn-wrap" style="z-index: 99;">
+  <li class = "btn" onclick = "showOverlay()">显示覆盖物</li>
+  <li class = "btn" onclick = "hideOverlay()">隐藏覆盖物</li>
+</ul>--%>
+<script type='text/javascript'>
+  var arrObj = [];
+  var map = new BMap.Map("container",{ minZoom : 8,maxZoom:20 }); // 创建地图实例
+  map.enableScrollWheelZoom();
+  map.enableDragging();
+  map.disableDoubleClickZoom();
+  map.addEventListener("zoomend", function(e){
+    var ZoomNum = map.getZoom();
+    console.log(ZoomNum)
+    del();
+    if(ZoomNum>9){
+      for(var i=0;i<6;i++){
+        addEvent(i);
+      }
+    }else{
+      getData();
+    }
+  });
+
+  $(function() {
+    getBoundary();
+    getData();
+  });
+
+  var blist = [];
+  var districtLoading = 0;
+
+  /*
+  =====获取行政区域边界=====
+  */
+  function getBoundary() {
+    addDistrict("广东省");
+  }
+
+  /*
+  =====添加行政区域=====
+  */
+  function addDistrict(districtName) {
+    //使用计数器来控制加载过程
+    districtLoading++;
+    var bdary = new BMap.Boundary();
+    bdary.get(districtName, function (rs) {       //获取行政区域
+      var count = rs.boundaries.length; //行政区域的点有多少个
+      for (var i = 0; i < count; i++) {
+        blist.push({ points: rs.boundaries[i], name: districtName });
+      };
+      //加载完成区域点后计数器-1
+      districtLoading--;
+      if (districtLoading == 0) {
+        //全加载完成后画端点
+        drawBoundary();
+      }
+    });
+  }
+
+  /*
+  =====点击行政区域事件=====
+  */
+  function click(evt) {
+    alert(evt.target.name);
+  }
+  /*
+  =====绘制边界=====
+  */
+  function drawBoundary() {
+    //包含所有区域的点数组
+    var pointArray = [];
+    //循环添加各闭合区域
+    for (var i = 0; i < blist.length; i++) {
+      //添加多边形层并显示
+      var ply = new BMap.Polygon(blist[i].points, {
+        strokeWeight: 1,   //边框宽度
+        trokeColor: "#FF4500",   //边框颜色
+        fillColor: "" //填充颜色
+      }); //建立多边形覆盖物
+      ply.name = blist[i].name;
+      ply.addEventListener("click", click);
+      map.addOverlay(ply);
+
+      //将点增加到视野范围内
+      var path = ply.getPath();
+      pointArray = pointArray.concat(path);
+    }
+
+    //限定显示区域(只显示特定区域，鼠标拖动松开后自动回到显示范围内)，需要引用api库
+    // var boundply = new BMap.Polygon(pointArray);
+    // BMapLib.AreaRestriction.setBounds(map, boundply.getBounds());
+    map.setViewport(pointArray);    //调整视野
+  }
+
+  function showOverlay() {
+    getBoundary();
+  }
+  function hideOverlay() {
+    map.clearOverlays();
+  }
+
+  function getData(){
+    var url = '/static/industry/data/df_totalCount.json';
+    $.getJSON(url,function(data){
+        var cluster = data.cluster_center;
+        for (p in cluster) {
+          var label = cluster[p]['label'];
+          var swB = new BMap.Point(cluster[p]['center']['lng'],cluster[p]['center']['lat']);
+          var sw_opts = {position : swB,offset : new BMap.Size(30, -30)}
+          var sw_label = new BMap.Label("<a onclick='addEvent("+label+")' value='"+label+"'>标签:"+label+';总数:'+cluster[p]['count']+"</a>", sw_opts);
+
+          /*sw_label.addEventListener("click", function(e){
+            console.log(e);
+            console.log($("#label1").val());
+            console.log($("#label2").val());
+            getData2('/static/sea/js/seaMap2/data/df_shipCount.json');console.log("24="+label);
+
+          });*/
+          arrObj.push(sw_label);
+          map.addOverlay(sw_label);
+        }
+    });
+  }
+
+  function getData2(url,lab){
+    $.getJSON(url,function(data){
+      var cluster = data.cluster_center;
+      var label = data.label;
+      for (p in cluster) {
+        if(cluster[p]['label']==lab){
+          var swB = new BMap.Point(cluster[p]['center']['lng'],cluster[p]['center']['lat']);
+          var sw_opts = {position : swB,offset : new BMap.Size(0, 0)}
+          var sw_label = new BMap.Label('<div class="circle2"><div style="text-align:center;line-height:38px">'+cluster[p]['count']+'</div></div>', sw_opts);
+          /*sw_label.setStyle({
+            //color : "#ffff00",
+            fontSize : "16px",
+            backgroundColor :"#ffff00",
+            border :"0",
+            //fontWeight :"bold"
+          });*/
+          arrObj.push(sw_label);
+          map.addOverlay(sw_label);
+        }
+      }
+    });
+  }
+
+  function addEvent(label){
+    oneDel(label);//点击标签,删除标签
+    getData2('/static/industry/data/df_all2Count.json',label);
+    getData2('/static/industry/data/df_controlCount.json',label);
+    getData2('/static/industry/data/df_embeddedCount.json',label);
+    getData2('/static/industry/data/df_managementCount.json',label);
+    getData2('/static/industry/data/df_simulationCount.json',label);
+    getData2('/static/industry/data/df_systemsCount.json',label);
+  }
+
+  function del(){
+    for(var i = 0; i < arrObj.length; i++) {
+      console.log(arrObj[i]);
+      map.removeOverlay(arrObj[i]);
+    }
+    arrObj.length = 0;
+  }
+
+  function oneDel(label){
+    for(var i = 0; i < arrObj.length; i++) {
+      if(arrObj[i].content.indexOf("value='"+label+"'") != -1){
+        map.removeOverlay(arrObj[i]);
+      }
+    }
+  }
+</script>
+</body>
+</html>

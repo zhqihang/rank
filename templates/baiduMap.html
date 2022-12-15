@@ -1,0 +1,339 @@
+<html>
+<head>
+  <title>百度地图</title>
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <title></title>
+  <script src="http://code.jquery.com/jquery-1.8.2.min.js"></script>
+  <script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=bW32G0vf4gCVbbHi9QbZRYvh4yIVIpsx"></script>
+  <script type="text/javascript" src="http://api.map.baidu.com/library/AreaRestriction/1.2/src/AreaRestriction_min.js"></script>
+  <script type="text/javascript" src="/static/js/GeoUtils_min.js"></script>
+  <script type="text/javascript" src="/static/js/CurveLine.js"></script>
+
+  <style type="text/css">
+    html, body {
+      margin: 0px;
+      padding: 0px;
+      height: 100%;
+    }
+    #container {
+      width: 100%;height: 100%;overflow: hidden;margin:0;font-family:"微软雅黑";
+    }
+    ul li {
+      list-style: none;
+    }
+    .btn-wrap {
+      z-index: 999;
+      position: fixed;
+      bottom: 3.5rem;
+      margin-left: 3rem;
+      padding: 1rem 1rem;
+      border-radius: .25rem;
+      background-color: #fff;
+      box-shadow: 0 2px 6px 0 rgba(27, 142, 236, 0.5);
+    }
+    .btn {
+      width: 120px;
+      height: 30px;
+      float: left;
+      background-color: #fff;
+      color: rgba(27, 142, 236, 1);
+      font-size: 14px;
+      border:1px solid rgba(27, 142, 236, 1);
+      border-radius: 5px;
+      margin: 0 5px;
+      text-align: center;
+      line-height: 30px;
+    }
+    .btn:hover {
+      background-color: rgba(27, 142, 236, 0.8);
+      color: #fff;
+    }
+    #up-map-div{
+      top:10px;
+      left:10px;
+      position:absolute;
+      z-index:9999;
+    }
+  </style>
+</head>
+
+<body>
+<div id="container"></div>
+<div id="up-map-div">
+{#  <div onClick="show(this,'energy')">☷ 能源</div>#}
+{#  <div onClick="show(this,'transportation')">☷ 运输</div>#}
+{#  <div onClick="show(this,'engineering')">☷ 工程</div>#}
+{#  <div onClick="show(this,'equipment')">☷ 设备</div>#}
+{#  <div onClick="show(this,'logistics')">☷ 物流</div>#}
+{#  <div onClick="show(this,'trade')">☷ 贸易</div>#}
+{#  <div onClick="show(this,'cultivation')">☷ 培养</div>#}
+{#  <div onClick="show(this,'aquatic_products')">☷ 水产品</div>#}
+{#  <div onClick="show(this,'cruise')">☷ 巡航</div>#}
+{#  <div onClick="show(this,'ship')">☷ 邮轮</div>#}
+{#  <div onClick="show(this,'other')">☷ 其他的</div>#}
+
+  <div> <a onClick="showOne(this,'simulation')">■ 工业仿真设计</a>  <select style="display: none;" id="simulation" onchange="showOne(this,'simulation')"><option value="0">全组</option></select></div>
+  <div> <a onClick="showOne(this,'embedded')">■ 工业嵌入书</a>  <select style="display: none;" id="embedded" onchange="showOne(this,'embedded')"><option value="0">全组</option></select></div>
+  <div> <a onClick="showOne(this,'systems')">■ 工业平台与系统</a>  <select style="display: none;" id="systems" onchange="showOne(this,'systems')"><option value="0">全组</option></select></div>
+  <div> <a onClick="showOne(this,'control')">■ 工业生产控制</a>  <select style="display: none;" id="control" onchange="showOne(this,'control')"><option value="0">全组</option></select></div>
+  <div> <a onClick="showOne(this,'management')">■ 工业经营管理</a>  <select style="display: none;" id="management" onchange="showOne(this,'management')"><option value="0">全组</option></select></div>
+  <div> <a onClick="showOne(this,'all2')">■ 工业</a>  <select style="display: none;" id="all2" onchange="showOne(this,'all2')"><option value="0">全组</option></select></div>
+  <input type="text" style="display: none" id="distance" value=""></input>
+</div>
+<%--<ul class="btn-wrap" style="z-index: 99;">
+  <li class = "btn" onclick = "showOverlay()">显示覆盖物</li>
+  <li class = "btn" onclick = "hideOverlay()">隐藏覆盖物</li>
+</ul>--%>
+<script type='text/javascript'>
+  var map = new BMap.Map("container",{ minZoom : 8,maxZoom:20 }); // 创建地图实例
+  map.enableScrollWheelZoom();
+  map.enableDragging();
+  map.disableDoubleClickZoom();
+
+  $(function() {
+    getBoundary();
+  });
+
+  arrObj = [];
+  function inits(at,ng,lat,lng){
+    //设置个性化样式
+    map.setMapStyle({
+      styleJson:  [{
+        "featureType": "road",
+        "elementType": "all",
+        "stylers": {
+          "color": "#ffffff",
+          "visibility": "off"
+        }
+      }]
+    });
+
+    var pointA = new BMap.Point(ng,at);//BMap.Point(113.350131,23.129725);
+    var pointB = new BMap.Point(lng,lat);
+    var curve = new BMapLib.CurveLine([pointA,pointB], {strokeColor:"blue", strokeWeight:3,strokeOpacity:0.5});
+    map.addOverlay(curve); //添加到地图中
+    curve.enableEditing(); //开启编辑功能
+    var label2 = "";
+    curve.addEventListener("mouseover", function (e) {
+      label2 = map.getDistance(pointA,pointB).toFixed(2)+'米';
+      $("#distance").show();
+      $("#distance").val(label2);
+    });
+    curve.addEventListener("mouseout", function (e) {
+      $("#distance").hide();
+    });
+    map.addOverlay(curve);
+    arrObj.push(curve);
+
+  }
+
+  function initOne(at,ng,lat,lng){
+    //设置个性化样式
+    map.setMapStyle({
+      styleJson:  [{
+        "featureType": "road",
+        "elementType": "all",
+        "stylers": {
+          "color": "#ffffff",
+          "visibility": "off"
+        }
+      }]
+    });
+
+    var pointA = new BMap.Point(ng,at);//BMap.Point(113.350131,23.129725);
+    var pointB = new BMap.Point(lng,lat);
+    var opts = {
+      position : pointB,    // 指定文本标注所在的地理位置
+      offset   : new BMap.Size(2, -20)    //设置文本偏移量
+    }
+    var label = new BMap.Label(map.getDistance(pointA,pointB).toFixed(2)+'米', opts);
+    //alert('从大渡口区到江北区的距离是：'+map.getDistance(pointA,pointB)+' 米。');     //获取两点距离
+    //创建直线
+    //var polyline = new BMap.Polyline([pointA,pointB], {strokeColor:"blue", strokeWeight:4, strokeOpacity:0.5});  //定义折线
+    //创建弧线
+    var curve = new BMapLib.CurveLine([pointA,pointB], {strokeColor:"blue", strokeWeight:3,strokeOpacity:0.5});
+    map.addOverlay(curve); //添加到地图中
+    curve.enableEditing(); //开启编辑功能
+    //map.addOverlay(polyline);   //添加折线到地图上
+    map.addOverlay(curve);
+    map.addOverlay(label);
+
+    //arrObj.push(polyline);
+    arrObj.push(curve);
+    arrObj.push(label);
+
+    //修改弧度思路：
+    //弧线是由很多个线段组成的，所以把每一个线段的纬度增加（减少），就可以达到改变弧度的效果。
+    //BMapLib.changeRad = 0.1;
+    //lat3 = h2 * Math.sin(t2) + lat1 + BMapLib.changeRad;
+    //BMapLib.changeRad += 0.1;
+  }
+
+  var blist = [];
+  var districtLoading = 0;
+
+  /*
+  =====获取行政区域边界=====
+  */
+  function getBoundary() {
+    addDistrict("广东省");
+  }
+
+  /*
+  =====添加行政区域=====
+  */
+  function addDistrict(districtName) {
+    //使用计数器来控制加载过程
+    districtLoading++;
+    var bdary = new BMap.Boundary();
+    bdary.get(districtName, function (rs) {       //获取行政区域
+      var count = rs.boundaries.length; //行政区域的点有多少个
+      for (var i = 0; i < count; i++) {
+        blist.push({ points: rs.boundaries[i], name: districtName });
+      };
+      //加载完成区域点后计数器-1
+      districtLoading--;
+      if (districtLoading == 0) {
+        //全加载完成后画端点
+        drawBoundary();
+      }
+    });
+  }
+
+  /*
+  =====点击行政区域事件=====
+  */
+  function click(evt) {
+    alert(evt.target.name);
+  }
+  /*
+  =====绘制边界=====
+  */
+  function drawBoundary() {
+    //包含所有区域的点数组
+    var pointArray = [];
+    //循环添加各闭合区域
+    for (var i = 0; i < blist.length; i++) {
+      //添加多边形层并显示
+      var ply = new BMap.Polygon(blist[i].points, {
+        strokeWeight: 1,   //边框宽度
+        trokeColor: "#FF4500",   //边框颜色
+        fillColor: "" //填充颜色
+      }); //建立多边形覆盖物
+      ply.name = blist[i].name;
+      ply.addEventListener("click", click);
+      map.addOverlay(ply);
+
+      //将点增加到视野范围内
+      var path = ply.getPath();
+      pointArray = pointArray.concat(path);
+    }
+
+    //限定显示区域(只显示特定区域，鼠标拖动松开后自动回到显示范围内)，需要引用api库
+    // var boundply = new BMap.Polygon(pointArray);
+    // BMapLib.AreaRestriction.setBounds(map, boundply.getBounds());
+    map.setViewport(pointArray);    //调整视野
+  }
+
+  function showOverlay() {
+    getBoundary();
+  }
+  function hideOverlay() {
+    map.clearOverlays();
+  }
+
+  $("#up-map-div div").click(function(){
+    var index = $(this).index();//返回当前点击的下标
+    $("#up-map-div div").removeAttr("style");
+    $("#up-map-div div:eq("+index+")").css("color","#ffcc33");
+  });
+
+  function show(html,data){
+    var url = "/static/industry/data/"+data+".json";
+    del();
+    $.getJSON(url,function(result){
+      console.log(result);
+      var cluster=result.cluster_center;
+      for(var i=0;i<cluster.length;i++){
+        for(var p=0;p<cluster.length;p++){
+          if(cluster[i]['lat']!=cluster[p]['lat']){
+            inits(cluster[i]['lat'],cluster[i]['lng'],cluster[p]['lat'],cluster[p]['lng']);
+          }
+        }
+      }
+    });
+  }
+
+  function showOne(html,data){
+    del();
+    var url = "/static/industry/data/"+data+".json";
+
+    $.getJSON(url,function(result){
+      var cluster=result.cluster_center;
+      if(!$("#"+data).is(':visible')){
+        hideAllSelect();
+        $("#"+data).show();
+        if($("#"+data+" option").length<2){
+          for(var i=1;i<cluster.length+1;i++){
+            document.getElementById(data).options.add(new Option(i+"组",i));
+          }
+          $("#"+data).val("1");
+        }
+
+      }
+
+      var index = $("#"+data).val();
+      if(index == "0"){
+        show(html,data);
+        return;
+      }
+      index=index-1;
+      for(var i=0;i<cluster.length;i++){//第一个作为起始中心点
+        if(cluster[index]['lat'] != cluster[i]['lat']){
+          initOne(cluster[index]['lat'],cluster[index]['lng'],cluster[i]['lat'],cluster[i]['lng']);
+        }
+      }
+
+    });
+  }
+
+  function del(){
+    /*for(var i = 0; i < arrObj.length; i++) {
+      map.removeOverlay(arrObj[i]);
+    }*/
+    map.clearOverlays();//清除所有覆盖物
+    arrObj.length = 0;
+  }
+
+  function delLine(lat,lng){
+    var pointA = new BMap.Point(113.350131,23.129725);
+    var pointB = new BMap.Point(lng,lat);
+    var opts = {
+      position : pointB,    // 指定文本标注所在的地理位置
+      offset   : new BMap.Size(0, -30)    //设置文本偏移量
+    }
+    var label = new BMap.Label("约 "+parseInt(map.getDistance(pointA,pointB)/1000)+' 公里。', opts);
+    //alert('从大渡口区到江北区的距离是：'+map.getDistance(pointA,pointB)+' 米。');     //获取两点距离
+    var polyline = new BMap.Polyline([pointA,pointB], {strokeColor:"blue", strokeWeight:4, strokeOpacity:0.5});  //定义折线
+
+    map.enableScrollWheelZoom();
+    map.enableDragging();
+    map.disableDoubleClickZoom();
+    map.removeOverlay(polyline);
+    map.removeOverlay(label);
+  }
+
+  function hideAllSelect()
+  {
+    var selects = document.getElementsByTagName("SELECT");
+    for(var i = 0 ; i<selects.length;i++)
+    {
+      selects[i].style.display = "none";
+    }
+  }
+
+</script>
+</body>
+</html>

@@ -68,3 +68,10 @@ def chart_zhexian(request):
         }
     }
     return JsonResponse(result)
+
+#百度地图
+def baiduMap(request):
+    return render(request, 'baiduMap.html')
+
+def baiduMapv(request):
+    return render(request, 'baiduMapv.html')
