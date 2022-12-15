@@ -7,56 +7,63 @@ from django.http import JsonResponse
 
 # 这里开发首页竞争力可视化
 def visualize(request):
-    # 获取公司对象
-    company = models.Company.objects.all()
-    return render(request,"visualize.html",{"company":company})
-
-def keshihua(request):
-    name = request.GET.get('name')
-    # 根据用户点击的公司名查询数据库表，返回该公司对象
-    company = models.Company.objects.get(Q(name=name))
-    rank= models.Rank.objects.get(Q(name=name))
-    print(company)
-    return render(request, "keshihua.html", {"name":name, "com":company, "rank":rank})
+    return render(request,"visualize.html")
+#
+# def keshihua(request):
+#     name = request.GET.get('name')
+#     # 根据用户点击的公司名查询数据库表，返回该公司对象
+#     company = models.Company.objects.get(Q(name=name))
+#     rank= models.Rank.objects.get(Q(name=name))
+#     print(company)
+#     return render(request, "keshihua.html", {"name":name, "com":company, "rank":rank})
 
 
 def chart_zhexian(request):
     x_axis_data=[]
+    y_axis_fz_data = []
+    y_axis_qr_data = []
+    y_axis_kz_data = []
+    y_axis_jy_data = []
+    y_axis_pt_data = []
     company = models.Company.objects.all()
     for item in company:
         x_axis_data.append(item.name)
+        y_axis_fz_data.append(item.fz_product)
+        y_axis_qr_data.append(item.qr_product)
+        y_axis_kz_data.append(item.kz_product)
+        y_axis_jy_data.append(item.jy_product)
+        y_axis_pt_data.append(item.pt_product)
     x_axis_list=x_axis_data[:20]
-
+    y_axis_fz_list = y_axis_fz_data[:20]
+    y_axis_qr_list = y_axis_qr_data[:20]
+    y_axis_kz_list = y_axis_kz_data[:20]
+    y_axis_jy_list = y_axis_jy_data[:20]
+    y_axis_pt_list = y_axis_pt_data[:20]
     y_axis = [
             {
               'name': '产品研发类',
               'type': 'line',
-
-              'data': [118, 233, 170, 139, 145, 155, 232, 162, 202, 297, 125, 251, 178, 118, 114, 152, 170, 220, 187, 235]
+              'data': y_axis_fz_list
             },
             {
               'name': '嵌入式类',
               'type': 'line',
-
-              'data':[298, 395, 292, 379, 398, 248, 325, 218, 265, 307, 369, 338, 346, 287, 350, 379, 279, 370, 287, 225]
+              'data':y_axis_qr_list
             },
             {
               'name': '生产控制类',
               'type': 'line',
-
-              'data': [730, 799, 645, 620, 662, 681, 706, 615, 757, 743, 781, 636, 649, 611, 761, 698, 785, 705, 778, 741]
+              'data': y_axis_kz_list
             },
             {
               'name': '信息管理类',
               'type': 'line',
-
-              'data': [665, 677, 689, 740, 542, 549, 771, 684, 506, 606, 586, 690, 777, 653, 634, 510, 608, 524, 580, 554]
+              'data': y_axis_jy_list
             },
             {
               'name': '平台与系统类',
               'type': 'line',
-
-              'data': [946, 786, 710, 717, 613, 693, 903, 875, 843, 754, 747, 928, 615, 950, 995, 986, 994, 678, 978, 637]
+              'data': y_axis_pt_list
             }
           ]
 
@@ -68,21 +75,10 @@ def chart_zhexian(request):
         }
     }
     return JsonResponse(result)
-from django.shortcuts import render,HttpResponse
-from myapp import models
-from django.db.models import Q
 
-# Create your views here.
+#百度地图
+def baiduMap(request):
+    return render(request, 'baiduMap.html')
 
-# 这里开发首页竞争力可视化
-def visualize(request):
-    # 获取公司对象
-    company = models.Company.objects.all()
-    return render(request,"visualize.html",{"company":company})
-
-def keshihua(request):
-    name = request.GET.get('name')
-    # 根据用户点击的公司名查询数据库表，返回该公司对象
-    company = models.Company.objects.get(Q(name=name))
-    print(company)
-    return render(request, "keshihua.html", {"name":name, "com":company})
+def baiduMapv(request):
+    return render(request, 'baiduMapv.html')

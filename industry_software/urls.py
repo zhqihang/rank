@@ -82,9 +82,20 @@ urlpatterns = [
     path('chaozhou/', function.chaozhou),
     path('chaozhou/vi', function.gohome),
 
-    # 这里是首页竞争力可视化
+    # 这里是首页聚类地图
     path('visualize/', views.visualize),
+    path('visualize/baiduMap', views.baiduMap),
+    path('visualize/baiduMapv', views.baiduMap),
     path('visualize/vi',function.gohome),
-    path('visualize/keshihua', views.keshihua),
     path('visualize/chart/',views.chart_zhexian),
+
+    # 这里是首页竞争力可视化
+    # path('visualize/', views.visualize),
+    # path('visualize/vi',function.gohome),
+    # path('visualize/keshihua', views.keshihua),
+    # path('visualize/chart/',views.chart_zhexian),
+
+    # 百度地图
+    # path('baiduMap/', views.baiduMap),
+    # path('baiduMapv/', views.baiduMapv),
 ]

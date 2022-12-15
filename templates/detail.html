@@ -28,6 +28,7 @@
             <li><a href="#雷达图">雷达图</a></li>
             <li><a href="#产品信息">产品信息</a></li>
             <li><a href="#柱状图">柱状图</a></li>
+            <li><a href="#产品词云">产品词云</a></li>
             <li><a href="./back/?guanjian={{guanjian}}&page={{page}}&option_type={{option_type}}" class="easyui-linkbutton" data-options="iconCls:'icon-back'">返回</a></li>
         </ul>
     </nav>
@@ -252,17 +253,35 @@
       myChart.setOption(option);
     </script>
 </section>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
 
-
-<h3>
-    产品词云
-</h3>
+<section id="产品词云">
+    <h3 class="title">
+     <span class="title-container">
+         <span>产品词云</span><!---->
+     </span>
+     <span class="tbadge"></span>
+    </h3>
 {% if pro_detail  %}
-
 <body>
     <div id = 'main-wrapper'>
 		<section>
-			<div class = "center">
+			<div class = "left">
 
 				<div id = 'word-cloud'>
 
@@ -286,6 +305,8 @@
 <b>无产品</b>
 {%  endif %}
 <br>
+</section>
+
 <div>
     <a href="./back/?guanjian={{guanjian}}&page={{page}}&option_type={{option_type}}" class="easyui-linkbutton" data-options="iconCls:'icon-back'">返回</a>
 </div>
